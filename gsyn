@@ -38,15 +38,36 @@ gsyn_up_all ()
 {
     for repo in $(cat "$HOME/.gsyn/repositories") 
     do
-        echo "synching up $echo..."
-        gsyn_up repo
+        echo   
+        echo "synching up $repo..."
+        # expand home
+        repo=$(echo $repo | sed 's|\~|'$HOME'|g')
+        repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
+        if [[ -d $repo ]] ; then
+            gsyn_up $repo
+        else
+            echo "error: dir $repo does not exist, check ./gsyn/repositories"
+        fi
     done
 }
 
-# gsyn_down_all ()
-# {
-# # todo
-# }
+gsyn_down_all ()
+{
+    for repo in $(cat "$HOME/.gsyn/repositories") 
+    do
+        echo   
+        echo "synching down $repo..."
+        # expand home
+        repo=$(echo $repo | sed 's|\~|'$HOME'|g')
+        repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
+        if [[ -d $repo ]] ; then
+            gsyn_down $repo
+        else
+            echo "error: dir $repo does not exist, check ./gsyn/repositories"
+        fi
+    done
+}
+
 
 # while :
 # do
