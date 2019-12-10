@@ -5,7 +5,7 @@
 gsyn_up() {
     owd=$(pwd)
     path=$1
-    if [[ ! -z "$path" ]]
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
     then
         cd $path
     # else: do nothing, suppose we are in the right
@@ -17,9 +17,9 @@ gsyn_up() {
 gsyn_down() {
     owd=$(pwd)
     path=$1
-    if [ -z "$path" ]
+    if [[ ! -z "$path" ]]
     then
-        cd path
+        cd $path
     # else: do nothing, suppose we are in the right
     fi
     git pull ;
