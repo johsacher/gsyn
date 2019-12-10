@@ -1,6 +1,12 @@
 #!/bin/bash
 # still todo
 # for now: gsyn_up after every change / gsyn_down when switching device
+# --> no problems obeying SIMPLE RULE:
+#     when switching machines:
+#          when leaving old machine:
+#               gsyn_up on old machine
+#          when start working on new machine:   
+#               gsyn_down on new machine
 
 gsyn_up() {
     owd=$(pwd)
@@ -26,6 +32,16 @@ gsyn_down() {
     fi
     git pull ;
     cd $owd
+}
+
+gsyn_up_all ()
+{
+# todo
+}
+
+gsyn_down_all ()
+{
+# todo
 }
 
 # while :
