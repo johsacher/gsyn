@@ -10,7 +10,9 @@ gsyn_up() {
         cd $path
     # else: do nothing, suppose we are in the right
     fi
-    git add -A && git commit -m '.' && git push ;
+    git add -A
+    git commit -m '.'
+    git push
     cd $owd
 }
 
