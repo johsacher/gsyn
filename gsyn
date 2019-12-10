@@ -38,8 +38,9 @@ gsyn_up_all ()
 {
     for repo in $(cat "$HOME/.gsyn/repositories") 
     do
-        echo   
+        echo  ; echo  
         echo "synching up $repo..."
+        echo "------------------------------------------"
         # expand home
         repo=$(echo $repo | sed 's|\~|'$HOME'|g')
         repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
