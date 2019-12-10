@@ -55,8 +55,9 @@ gsyn_down_all ()
 {
     for repo in $(cat "$HOME/.gsyn/repositories") 
     do
-        echo   
+        echo  ; echo  
         echo "synching down $repo..."
+        echo "------------------------------------------"
         # expand home
         repo=$(echo $repo | sed 's|\~|'$HOME'|g')
         repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
