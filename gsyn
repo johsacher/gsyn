@@ -1,0 +1,45 @@
+#!/bin/bash
+# still todo
+# for now: gsyn_up after every change / gsyn_down when switching device
+
+gsyn_up() {
+    owd=$(pwd)
+    path=$1
+    if [[ ! -z "$path" ]]
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
+    git add -A && git commit -m '.' && git push ;
+    cd $owd
+}
+
+gsyn_down() {
+    owd=$(pwd)
+    path=$1
+    if [ -z "$path" ]
+    then
+        cd path
+    # else: do nothing, suppose we are in the right
+    fi
+    git pull ;
+    cd $owd
+}
+
+# while :
+# do
+#     # todo: for all repos (get from file ~/.gsyn/repositories
+#     sleep 20
+#     echo "* checking if sync necessary (master ahead (1)/remote ahead (2)/diverged(3)?)..."
+
+#     echo "* remote ahead (1) --> sync down..."
+#     # gsyn_down
+
+#     echo "* local ahead (2) --> sync up..."
+#     # gsyn_up
+
+#     echo "* diverged (3) --> more difficult --> try to merge..."
+
+# done
+
+
