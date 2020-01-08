@@ -144,7 +144,10 @@ gsyn_checkout ()
 
     #** scenario (3) already other machine
     else
-        echo "Other machine already/still checked in, with machine name: $GSYN_CHECKED_IN_MACHINE  "
+        echo
+        echo
+        echo "Other machine already/still checked in, with machine name:"
+        echo "    $GSYN_CHECKED_IN_MACHINE  "
         echo "check in not allowed! --> check out other machine first!"
     fi
 }
@@ -184,7 +187,10 @@ gsyn_checkin ()
 
     #** scenario (3) already other machine
     else
-        echo "Other machine already/still checked in, with machine name: $GSYN_CHECKED_IN_MACHINE  "
+        echo
+        echo
+        echo "Other machine already/still checked in, with machine name:"
+        echo "    $GSYN_CHECKED_IN_MACHINE  "
         echo "check in not allowed! --> check out other machine first!"
     fi
 }
