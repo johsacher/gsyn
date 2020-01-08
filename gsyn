@@ -196,6 +196,16 @@ gsyn_checkin ()
 }
 
 
+# some handy aliases (easier for command line, history completion)
+in_gsyn ()
+{
+    gsyn_checkin
+}
+
+out_gsyn ()
+{
+    gsyn_checkout
+}
 
 
 # while :
