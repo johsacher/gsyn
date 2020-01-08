@@ -118,10 +118,36 @@ set_checked_in_machine_none ()
 
 gsyn_checkout ()
 {
-    set_checked_in_machine_none # writes "none" to ~/.gsyn/checked_in_machine -> to tell other machines that they are allowed to checkin
-    gsyn_up_all
-}
+    #* first check if i am allowed to checkin (requires checked_in_machine to be "none")
+    gsyn_down $HOME/.gsyn # this just updates(uploads) the ~/.gsyn/checked_in_machine -> see if other machine is checked in
+    set_GSYN_CHECKED_IN_MACHINE
+    set_GSYN_THIS_MACHINE_NAME
 
+    #* 3 scenarios: (1) none checked in ; (2) already checked in ; (3) other machine checked in
+
+    #** scenario (1) none
+    if [[ $GSYN_CHECKED_IN_MACHINE = "none" ]] ; then
+        echo "Currently checked in machine to gsyn: none. --> already checked out."
+
+    #** scenario (2) checked in
+    elif [[ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ]] ; then
+        echo "This machine $GSYN_THIS_MACHINE_NAME is currently checked in and will be checked out now..."
+        #*** check in this machine
+        echo "    update(upload) server..."
+        echo "    ------------------------------------"
+        echo "    ------------------------------------"
+        gsyn_up_all # (just in case) get up-to-date state of projects 
+        #*** when successfully uploaded -> "officially check out"
+        set_checked_in_machine_none # writes "none" to ~/.gsyn/checked_in_machine -> to tell other machines that they are allowed to checkin
+        gsyn_up $HOME/.gsyn # this just updates(uploads) the ~/.gsyn/checked_in_machine -> visible for other machines
+        echo "... Machine checked out successfully out off gsyn."
+
+    #** scenario (3) already other machine
+    else
+        echo "Other machine already/still checked in, with machine name: $GSYN_CHECKED_IN_MACHINE  "
+        echo "check in not allowed! --> check out other machine first!"
+    fi
+}
 
 gsyn_checkin ()
 {
