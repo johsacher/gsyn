@@ -3,4 +3,5 @@
 *#
 .#*
 /repositories
+/this_machine_name
 # repositories file has to be manually configured for each machine, because you may not want to sync all projects on a particular machine, but a subset of projects
