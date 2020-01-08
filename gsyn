@@ -172,6 +172,10 @@ gsyn_checkin ()
     elif [[ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ]] ; then
         echo "This machine $GSYN_THIS_MACHINE_NAME is already checked in into gsyn."
         #*** check in this machine
+
+        echo "     just for safety perform gsyn_down_all..."
+        echo "------------------------------------------"
+        echo "------------------------------------------"
         gsyn_down_all # (just in case) get up-to-date state of projects 
         set_checked_in_machine_this_machine # writes <this_machine_name> to ~/.gsyn/checked_in_machine -> to tell other machines that they are NOT allowed to checkin
         gsyn_up $HOME/.gsyn # this just updates(uploads) the ~/.gsyn/checked_in_machine -> visible for other machines
