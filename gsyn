@@ -170,6 +170,7 @@ gsyn_checkin ()
         set_checked_in_machine_this_machine # writes <this_machine_name> to ~/.gsyn/checked_in_machine -> to tell other machines that they are NOT allowed to checkin
         gsyn_up $HOME/.gsyn # this just updates(uploads) the ~/.gsyn/checked_in_machine -> visible for other machines
 
+        echo "... Machine $GSYN_THIS_MACHINE_NAME checked in successfully into gsyn."
 
     #** scenario (2) already checked in
     elif [[ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ]] ; then
@@ -183,7 +184,7 @@ gsyn_checkin ()
         set_checked_in_machine_this_machine # writes <this_machine_name> to ~/.gsyn/checked_in_machine -> to tell other machines that they are NOT allowed to checkin
         gsyn_up $HOME/.gsyn # this just updates(uploads) the ~/.gsyn/checked_in_machine -> visible for other machines
 
-        echo "... Machine checked in successfully into gsyn."
+        echo "... Machine $GSYN_THIS_MACHINE_NAME checked in successfully into gsyn."
 
     #** scenario (3) already other machine
     else
