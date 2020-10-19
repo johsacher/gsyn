@@ -1,0 +1,15 @@
+# repo_name=MyEmacsConfig
+# local_dir_repo=/home/johannes/$repo_name
+# server_dir_bare_repos=/homes2/ifvt/sacher/gitBareRepos # don t use ~ or $HOME -> would be expanded differently on machines
+# server_dir_repo=~/$repo_name
+# ssh_host_alias=mathe
+# remote_name=origin_mathe
+
+repo_name=MyOpenFoamPrograms
+# local_dir_repo=/home/johannes/MyTools/$repo_name
+local_dir_repo='~'/MyTools/$repo_name
+server_dir_bare_repos='~'/gitBareRepos
+# server_dir_bare_repos=/homes2/ifvt/sacher/gitBareRepos 
+server_dir_repo='~'/MyTools/$repo_name
+ssh_host_alias=mathe
+remote_name=origin_mathe

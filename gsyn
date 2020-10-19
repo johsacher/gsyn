@@ -208,6 +208,154 @@ out_gsyn ()
     gsyn_checkout
 }
 
+gsyn_setup_local_to_server ()
+{
+    echo "reading config (gsyn_config_vars)..."
+    if test -f "gsyn_config_vars"; then
+        source gsyn_config_vars
+        echo
+        echo "file gsyn_config_vars found and sourced."
+    else
+        echo
+        echo "file gsyn_config_vars not found. make sure you re in the same directory, when executing."
+        return 1
+    fi
+    echo "your config is this:"
+
+    echo
+    echo "repo_name:             " $repo_name
+    echo "local_dir_repo:        " $local_dir_repo
+    echo "server_dir_bare_repos: " $server_dir_bare_repos
+    echo "server_dir_repo:       " $server_dir_repo
+    echo "ssh_host_alias:        " $ssh_host_alias
+    echo "remote_name:           " $remote_name
+    echo
+
+    echo "you sure everything ok? then continue with any key press."
+    echo "(mind: '~' in these strings I will be expanded automatically for local machine/server respectively)"
+    read -rsn1 -p"Press any key to continue" pressed_key;echo
+    echo $pressed_key
+
+
+    echo "   expanding '~' to absolute paths (both local and server)"
+    # ** getting '~' expansion local and home
+
+    echo "   retrieving absolute home path from server..."
+    ssh $ssh_host_alias "cd ~ ; pwd > ~/this_server_absolute_path_home.txt"
+    rsync --progress -va -I $ssh_host_alias:~/this_server_absolute_path_home.txt ~/
+    home_path_server=$(cat ~/this_server_absolute_path_home.txt)
+    home_path_local=~
+    echo
+    echo "   retrieved absolute home path from server: complete."
+    echo "   the home path on server is: " $home_path_server
+
+    local_dir_repo=$(echo $local_dir_repo | sed 's|~|'$home_path_local'|g')
+    server_dir_repo=$(echo $server_dir_repo | sed 's|~|'$home_path_server'|g')
+    server_dir_bare_repos=$(echo $server_dir_bare_repos | sed 's|~|'$home_path_server'|g')
+
+    echo
+    echo "your variables after '~'-expansion: "
+    echo
+    echo "repo_name:             " $repo_name
+    echo "local_dir_repo:        " $local_dir_repo
+    echo "server_dir_bare_repos: " $server_dir_bare_repos
+    echo "server_dir_repo:       " $server_dir_repo
+    echo "ssh_host_alias:        " $ssh_host_alias
+    echo "remote_name:           " $remote_name
+    echo
+
+    echo "you sure everything ok? then continue with any key press."
+
+    read -rsn1 -p"Press any key to continue" pressed_key;echo
+    echo $pressed_key
+
+
+    # * step 1 (server)
+    echo
+    echo "Step 1 (on server): init new bare repo..."
+    command="cd $server_dir_bare_repos && git init --bare $repo_name.git"
+    echo "    performing command on ssh server: $command"
+    ssh $ssh_host_alias $command
+    echo 
+    echo "    done."
+    echo
+
+    # * step 2 (local machine)
+    echo
+    echo "Step 2 (on local machine): add remote to local repo, add/commit and push..."
+    cd $local_dir_repo
+    echo "executing: git remote add $remote_name $ssh_host_alias:$server_dir_bare_repos/$repo_name.git..."
+    echo "executing: git remote add $remote_name $ssh_host_alias:$server_dir_bare_repos/$repo_name.git"
+    git remote add $remote_name $ssh_host_alias:$server_dir_bare_repos/$repo_name.git
+
+    echo "executing: git add -A ; git commit -m '.' "
+    git add -A ; git commit -m '.'
+    echo "executing: git push $remote_name master"
+    git push $remote_name master
+    echo "    done."
+    echo
+
+    # * step 3 (server)
+    echo "Step 3 (on server): create real repo directory/ clone bare repo..."
+    command="mkdir $server_dir_repo"
+    command="$command ; cd $server_dir_repo"
+    command="$command ; git clone $server_dir_bare_repos/$repo_name.git . " # (if the current directory is empty, you can add "." no folder created, just content cloned)
+    ssh $ssh_host_alias $command
+}
+
+gsyn_setup_local_to_server_instructions ()
+{
+    echo "this is just an instruction. execute the following on your local machine / server"
+    echo
+    echo "0. prepare the gsyn_config_vars file, copy it to both local and server machine. e.g. like this: 
+    # file gsyn_config_vars
+    # ----------------------------
+    repo_name=MyEmacsConfig
+    local_dir_repo=/home/johannes/$repo_name
+    server_dir_bare_repos=/homes2/ifvt/sacher/gitBareRepos # don t use ~ or $HOME -> would be expanded differently on machines
+    server_dir_repo=~/$repo_name
+    ssh_host_alias=mathe
+    remote_name=origin_mathe "
+
+    echo 
+    echo "1. on server        : run gsyn_setup_local_to_server_step1server "
+    echo "2. on local machine : run gsyn_setup_local_to_server_step2local "
+    echo "3. on server        : run gsyn_setup_local_to_server_step3server "
+    # 
+}
+
+gsyn_setup_local_to_server_step1server ()
+{
+    echo "gsyn_setup_local_to_server step 1... (init bare repo on server)"
+    source gsyn_config_vars
+    cd $server_dir_bare_repos
+    git init --bare $repo_name.git # this is a convenction -> name bare repose with .git extension ("Also, it's conventional to give bare repositories the extension .git" https://stackoverflow.com/questions/7632454/how-do-you-use-git-bare-init-repository)
+}
+
+gsyn_setup_local_to_server_step2local ()
+{
+    echo "gsyn_setup_local_to_server step 2... (add remote to local repo and push)"
+    source gsyn_config_vars
+    cd $local_dir_repo
+    git remote add $remote_name $ssh_host_alias:$server_dir_bare_repos/$repo_name.git
+    git add -A ; git commit -m '.' ; # first update 
+    git push $remote_name master
+}
+
+gsyn_setup_local_to_server_step3server ()
+{
+    source gsyn_config_vars
+    echo "gsyn_setup_local_to_server step 3... (create real repo directory, clone bare repo)"
+    mkdir $server_dir_repo
+    cd $server_dir_repo
+    git clone $server_dir_bare_repos/$repo_name.git . # (if the current directory is empty, you can add "." no folder created, just content cloned)
+}
+
+dummy_test_ssh_with_command ()
+{
+    host_alias=blogin
+    ssh $host_alias "touch test.txt"
+}
 
 # while :
 # do
@@ -225,7 +373,4 @@ out_gsyn ()
 
 # done
 
-#blabla
-# blabla2
-# bla3
 
