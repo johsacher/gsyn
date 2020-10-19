@@ -8,6 +8,33 @@
 #          when start working on new machine:   
 #               gsyn_down on new machine
 
+gsyn_addcommit() {
+    owd=$(pwd)
+    path=$1
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
+    echo 'git add -A ...'
+    git add -A
+    echo "git commit -m '.' ..."
+    git commit -m '.'
+    cd $owd
+}
+
+gsyn_push() {
+    owd=$(pwd)
+    path=$1
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
+    echo 'git push ...'
+    git push
+    cd $owd
+}
 gsyn_up() {
     owd=$(pwd)
     path=$1
@@ -16,8 +43,11 @@ gsyn_up() {
         cd $path
     # else: do nothing, suppose we are in the right
     fi
+    echo 'git add -A ...'
     git add -A
+    echo "git commit -m '.' ..."
     git commit -m '.'
+    echo 'git push ...'
     git push
     cd $owd
 }
@@ -30,6 +60,7 @@ gsyn_down() {
         cd $path
     # else: do nothing, suppose we are in the right
     fi
+    echo 'git pull ...' ;
     git pull ;
     cd $owd
 }
@@ -355,6 +386,16 @@ dummy_test_ssh_with_command ()
 {
     host_alias=blogin
     ssh $host_alias "touch test.txt"
+}
+
+gsyn ()
+{
+    # save/secure local edits
+    gsyn_addcommit
+    # get/merge server state
+    gsyn_down
+    # push everything to server
+    gsyn_push
 }
 
 # while :
