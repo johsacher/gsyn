@@ -1,48 +1,39 @@
-#!/bin/sh
-echo "i m gsyn command, i m in path: $(pwd)."
+#!/bin/bash
+# still todo
+# for now: gsyn_up after every change / gsyn_down when switching device
+# --> no problems obeying SIMPLE RULE:
+#     when switching machines:
+#          when leaving old machine:
+#               gsyn_up on old machine
+#          when start working on new machine:   
+#               gsyn_down on new machine
 
-echo "my arguments are:"
-echo "   argument \$0: $0"
-echo "   argument \$1: $1"
+gsyn_dummy_message() {
+    echo "i m gsyn_dummy_message"
+    }
 
-# devnote: this file (the gsyn-command) is here in ~/bin directory so that NON-INTERACTIVE (sub-)shells can also use it (they don t get initiated with .bashrc, .profile, etc/profile or etc/bash.bashrc.
-# so it s better to implement gsyn here fully without dependencies to other files
+export -f gsyn_dummy_message
 
-# todos (devnote): "merge" (somehow??..) the installation/implementation of "the source part" of gsyn (in ~.gsyn/gsyn) and "the installed program part" (here in ~/bin) -> syncing on machines 
-#  ** maybe it s good to sync ~/gsyn and make an install.sh script (which puts gsyn-command into the ~/bin)
+gsyn_dummy_message_non_exported() {
+    echo "i m gsyn_dummy_message_non_exported."
+    }
 
-# echo "i m gsyn command."
+gsyn_dummy_message_call_other_non_exported() {
+    # call of non exported -> will it work when only the caller is exported?
+    echo "i m gsyn_dummy_message_call_other_non_exported."
+    echo "i ll call now gsyn_dummy_message_non_exported."
+    gsyn_dummy_message_non_exported
+    }
+export -f gsyn_dummy_message_call_other_non_exported
 
-# * save original path
-set -e
-set -u
-
-owd=$(pwd)
-
-# * arguments (path)
-if [ -z ${1+x} ] # secure way to check if $1 is set ( if [ ! -z "1$" ] -> produces error: "bash: error 'parameter not set"
-then
-    # echo "arg 1 is unset"
-    path=""
-else
-    # echo "arg 1 is set to $1"
-    path=$1
-fi
-
-if [ ! -z "$path" ] #not(!) empty(-z)
-then
-    path=$1
-    echo "path specified. execute gsyn in this directory: $path"
-    cd $path
-else # do nothing, suppose we are in the right
-    echo "no path specified. execute gsyn in this directory: $(pwd)"
-fi
-
-# * sub-routines (functions)
 gsyn_addcommit() {
     owd=$(pwd)
-    if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
-    cd $path
+    path=$1
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
     echo 'git add -A ...'
     git add -A
     echo "git commit -m '.' ..."
@@ -52,16 +43,24 @@ gsyn_addcommit() {
 
 gsyn_push() {
     owd=$(pwd)
-    if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
-    cd $path
+    path=$1
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
     echo 'git push ...'
     git push
     cd $owd
 }
 gsyn_up() {
     owd=$(pwd)
-    if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
-    cd $path
+    path=$1
+    if [[ ! -z "$path" ]] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
     echo 'git add -A ...'
     git add -A
     echo "git commit -m '.' ..."
@@ -73,12 +72,17 @@ gsyn_up() {
 
 gsyn_down() {
     owd=$(pwd)
-    if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
-    cd $path
+    path=$1
+    if [[ ! -z "$path" ]]
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
     echo 'git pull ...' ;
     git pull ;
     cd $owd
 }
+
 
 
 gsyn_up_all ()
@@ -91,7 +95,7 @@ gsyn_up_all ()
         # expand home
         repo=$(echo $repo | sed 's|\~|'$HOME'|g')
         repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
-        if [ -d $repo ] ; then
+        if [[ -d $repo ]] ; then
             gsyn_up $repo
         else
             echo "error: directory $repo does not exist, check ./gsyn/repositories"
@@ -109,7 +113,7 @@ gsyn_down_all ()
         # expand home
         repo=$(echo $repo | sed 's|\~|'$HOME'|g')
         repo=$(echo $repo | sed 's|$HOME|'$HOME'|g')
-        if [ -d $repo ] ; then
+        if [[ -d $repo ]] ; then
             gsyn_down $repo
         else
             echo "error: directory $repo does not exist, check ./gsyn/repositories"
@@ -127,7 +131,7 @@ gsyn_down_all ()
 
 set_GSYN_THIS_MACHINE_NAME ()
 {
-    if [ -f "$HOME/.gsyn/this_machine_name" ] ; then
+    if [[ -f "$HOME/.gsyn/this_machine_name" ]] ; then
         GSYN_THIS_MACHINE_NAME=$(cat $HOME/.gsyn/this_machine_name)
     else
         echo "error: file $HOME/.gsyn/this_machine_name does not exist, add it and put some machine name of your choice there in the first line."
@@ -139,7 +143,7 @@ set_GSYN_THIS_MACHINE_NAME ()
 
 set_GSYN_CHECKED_IN_MACHINE ()
 {
-    if [ -f "$HOME/.gsyn/checked_in_machine" ] ; then
+    if [[ -f "$HOME/.gsyn/checked_in_machine" ]] ; then
         GSYN_CHECKED_IN_MACHINE=$(cat $HOME/.gsyn/checked_in_machine)
     else
         echo "error: file $HOME/.gsyn/checked_in_machine does not exist, add it and put some machine name of your choice there in the first line."
@@ -171,11 +175,11 @@ gsyn_checkout ()
     #* 3 scenarios: (1) none checked in ; (2) already checked in ; (3) other machine checked in
 
     #** scenario (1) none
-    if [ $GSYN_CHECKED_IN_MACHINE = "none" ] ; then
+    if [[ $GSYN_CHECKED_IN_MACHINE = "none" ]] ; then
         echo "Currently checked in machine to gsyn: none. --> already checked out."
 
     #** scenario (2) checked in
-    elif [ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ] ; then
+    elif [[ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ]] ; then
         echo "This machine $GSYN_THIS_MACHINE_NAME is currently checked in and will be checked out now..."
         #*** check in this machine
         echo "    update(upload) server..."
@@ -207,7 +211,7 @@ gsyn_checkin ()
     #* 3 scenarios: (1) none checked in ; (2) already checked in ; (3) other machine checked in
 
     #** scenario (1) none
-    if [ $GSYN_CHECKED_IN_MACHINE = "none" ] ; then
+    if [[ $GSYN_CHECKED_IN_MACHINE = "none" ]] ; then
         echo "Currently checked in machine to gsyn: none. --> check in this machine $GSYN_THIS_MACHINE."
 
         #*** check in this machine
@@ -218,7 +222,7 @@ gsyn_checkin ()
         echo "... Machine $GSYN_THIS_MACHINE_NAME checked in successfully into gsyn."
 
     #** scenario (2) already checked in
-    elif [ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ] ; then
+    elif [[ $GSYN_CHECKED_IN_MACHINE = $GSYN_THIS_MACHINE_NAME ]] ; then
         echo "This machine $GSYN_THIS_MACHINE_NAME is already checked in into gsyn."
         #*** check in this machine
 
@@ -402,13 +406,42 @@ dummy_test_ssh_with_command ()
     ssh $host_alias "touch test.txt"
 }
 
-# * git sync
-# save/secure local edits
-gsyn_addcommit
-# get/merge server state
-gsyn_down # = pull
-# push everything to server
-gsyn_push
+gsyn_bash_function () # not to be called in future, replaced by ~/bin/gsyn (which can be found and thus used by all shells/subshells/iteractive/non-interactive and whatever)
+{
+    owd=$(pwd)
+    # * arguments (path)
+    path=$1
+    if [ ! -z "$path" ] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
+    # * git sync
+    # save/secure local edits
+    gsyn_addcommit
+    # get/merge server state
+    gsyn_down # = pull
+    # push everything to server
+    gsyn_push
+    
+    # * return original directory
+    cd $owd
+}
 
-# * return original directory
-cd $owd
+# while :
+# do
+#     # todo: for all repos (get from file ~/.gsyn/repositories
+#     sleep 20
+#     echo "* checking if sync necessary (master ahead (1)/remote ahead (2)/diverged(3)?)..."
+
+#     echo "* remote ahead (1) --> sync down..."
+#     # gsyn_down
+
+#     echo "* local ahead (2) --> sync up..."
+#     # gsyn_up
+
+#     echo "* diverged (3) --> more difficult --> try to merge..."
+
+# done
+
+GSYN_SOURCED=true
