@@ -8,6 +8,24 @@
 #          when start working on new machine:   
 #               gsyn_down on new machine
 
+gsyn_dummy_message() {
+    echo "i m gsyn_dummy_message"
+    }
+
+export -f gsyn_dummy_message
+
+gsyn_dummy_message_non_exported() {
+    echo "i m gsyn_dummy_message_non_exported."
+    }
+
+gsyn_dummy_message_call_other_non_exported() {
+    # call of non exported -> will it work when only the caller is exported?
+    echo "i m gsyn_dummy_message_call_other_non_exported."
+    echo "i ll call now gsyn_dummy_message_non_exported."
+    gsyn_dummy_message_non_exported
+    }
+export -f gsyn_dummy_message_call_other_non_exported
+
 gsyn_addcommit() {
     owd=$(pwd)
     path=$1
@@ -388,14 +406,26 @@ dummy_test_ssh_with_command ()
     ssh $host_alias "touch test.txt"
 }
 
-gsyn ()
+gsyn_bash_function () # not to be called in future, replaced by ~/bin/gsyn (which can be found and thus used by all shells/subshells/iteractive/non-interactive and whatever)
 {
+    owd=$(pwd)
+    # * arguments (path)
+    path=$1
+    if [ ! -z "$path" ] #not(!) empty(-z)
+    then
+        cd $path
+    # else: do nothing, suppose we are in the right
+    fi
+    # * git sync
     # save/secure local edits
     gsyn_addcommit
     # get/merge server state
-    gsyn_down
+    gsyn_down # = pull
     # push everything to server
     gsyn_push
+    
+    # * return original directory
+    cd $owd
 }
 
 # while :
@@ -414,4 +444,4 @@ gsyn ()
 
 # done
 
-
+GSYN_SOURCED=true
