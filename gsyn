@@ -45,9 +45,9 @@ gsyn_addcommit() {
     if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
     cd $path
     echo 'git add -A ...'
-    git add -A
+    git add -A || true
     echo "git commit -m '.' ..."
-    git commit -m '.'
+    git commit -m '.' || true
     cd $owd
 }
 
@@ -56,7 +56,7 @@ gsyn_pull() {
     if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
     cd $path
     echo 'git pull ...'
-    git push
+    git push || true
     cd $owd
 }
 
@@ -65,7 +65,7 @@ gsyn_push() {
     if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
     cd $path
     echo 'git push ...'
-    git push
+    git push || true
     cd $owd
 }
 
