@@ -80,6 +80,9 @@ gsyn_addcommit
 echo "* gsyn step 2 - fetch and merge mother ..."
 gsyn_pull 
 # ** step 3: upload the new state to the mother - i.e. push everything to the git-server
+echo "git pull second time... (necessary in case of  '! [rejected]        master -> master (fetch first)'"
+gsyn_pull 
+
 echo "* gsyn step 3 - upload new state to mother ..."
 gsyn_push
 
