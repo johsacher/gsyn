@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "* gsyn check/report args ..."
 echo "i m gsyn command, i m in path: $(pwd)."
 
 echo "my arguments are:"
@@ -70,13 +71,16 @@ gsyn_push() {
 
 # * steps
 # ** step 1: secure ('save') local changes
+echo "* gsyn step 1 - secure local changes ..."
 gsyn_addcommit
 # ** step 2: merge "mother" with local changes
 #      -> scenario 1 (90%): when mother is unchanged, trivial, new state = local state
 #      -> scenario 2 (9%): when mother is also changed, but different lines of same file, and/or different files -> git's auto-merge succeeds no problem, beautifull/automatic sync, even after /parallel editing of files/ (!) 
 #      -> scenario 3 (1%): conflicting changes of same lines, mother vs local -> auto-merge fails -> for now: user has to manually delete conflicting lines, look for git's "HEAD/<<<<<</>>>>>>"-entries, which is also not that difficult, should not have happened with proper usage, but in future: can be dealt in a more automatic/UX-friendly way via interactive CLI or GUI
+echo "* gsyn step 2 - fetch and merge mother ..."
 gsyn_pull 
 # ** step 3: upload the new state to the mother - i.e. push everything to the git-server
+echo "* gsyn step 3 - upload new state to mother ..."
 gsyn_push
 
 # * return original directory
