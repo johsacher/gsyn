@@ -56,7 +56,7 @@ gsyn_pull() {
     if [ -z ${1+x} ] ; then path="$(pwd)" ; else path=$1 ; fi
     cd $path
     echo 'git pull ...'
-    git push || true
+    git pull || true
     cd $owd
 }
 
@@ -79,9 +79,10 @@ gsyn_addcommit
 #      -> scenario 3 (1%): conflicting changes of same lines, mother vs local -> auto-merge fails -> for now: user has to manually delete conflicting lines, look for git's "HEAD/<<<<<</>>>>>>"-entries, which is also not that difficult, should not have happened with proper usage, but in future: can be dealt in a more automatic/UX-friendly way via interactive CLI or GUI
 echo "* gsyn step 2 - fetch and merge mother ..."
 gsyn_pull 
+# not necessary -> outcommented: echo "git pull second time... (necessary in case of  '! [rejected]        master -> master (fetch first)'"
+
+# gsyn_pull 
 # ** step 3: upload the new state to the mother - i.e. push everything to the git-server
-echo "git pull second time... (necessary in case of  '! [rejected]        master -> master (fetch first)'"
-gsyn_pull 
 
 echo "* gsyn step 3 - upload new state to mother ..."
 gsyn_push
