@@ -90,5 +90,8 @@ echo
 echo "* gsyn step 3 - upload new state to mother ..."
 gsyn_push
 
+echo 
+echo "gsyn finished."
+
 # * return original directory
 cd $owd
