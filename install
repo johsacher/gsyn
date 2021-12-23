@@ -4,3 +4,6 @@ cd ${0%/*} || exit 1    # Run from this directory
 
 cp gsyn $HOME/bin
 echo "gsyn installed for current user. i.e. gsyn-executable copied to $HOME/bin"
+
+cp gsyn_all $HOME/bin
+echo "gsyn installed for current user. i.e. gsyn-executable copied to $HOME/bin"

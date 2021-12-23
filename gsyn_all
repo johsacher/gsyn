@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+set -u
+# get all projects from file gsyn_all_projects
+projects=$(cat "$HOME/gsyn/gsyn_all_projects")
+echo following projects will be gsyn\'ed
+echo '(change ~/gsyn/gsyn_all_projects, if you want different default ones)'
+echo $projects
+
+for proj in $projects; do
+    echo "gsyn-synching project $proj"...
+    echo "============================"
+    gsyn $proj
+done
