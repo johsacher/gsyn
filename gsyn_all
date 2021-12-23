@@ -8,7 +8,12 @@ echo '(change ~/gsyn/gsyn_all_projects, if you want different default ones)'
 echo $projects
 
 for proj in $projects; do
-    echo "gsyn-synching project $proj"...
+    echo
+    eval echo "gsyn-synching project $proj"...
     echo "============================"
-    gsyn $proj
+    echo 'expanded directory name:'
+    proj_expanded=$(eval echo $proj)
+    echo $proj_expanded
+    echo
+    gsyn $proj_expanded
 done
