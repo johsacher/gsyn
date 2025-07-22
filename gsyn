@@ -1,10 +1,32 @@
 #!/bin/sh
+set -e
+set -u
+
 echo "* gsyn check/report args ..."
 echo "i m gsyn command, i m in path: $(pwd)."
 
 echo "my arguments are:"
 echo "   argument \$0: $0"
-echo "   argument \$1: $1"
+
+# $1 = path
+if [ -z ${1+x} ] # secure way to check if $1 is set ( if [ ! -z "1$" ] -> produces error: "bash: error 'parameter not set"
+then
+    path="."
+    echo "   path    = default      = " $path
+else
+    path=$1
+    echo "   path    = argument \$1 = $1"
+fi
+
+if [ -z ${2+x} ] # secure way to check if $1 is set ( if [ ! -z "1$" ] -> produces error: "bash: error 'parameter not set"
+then
+    message="."
+    echo "   message = default      = "$message
+else
+    message=$2
+    echo "   message = argument \$2 = '"$message"'"
+fi
+
 
 # devnote: this file (the gsyn-command) is here in ~/bin directory so that NON-INTERACTIVE (sub-)shells can also use it (they don t get initiated with .bashrc, .profile, etc/profile or etc/bash.bashrc.
 # so it s better to implement gsyn here fully without dependencies to other files
@@ -15,20 +37,20 @@ echo "   argument \$1: $1"
 # echo "i m gsyn command."
 
 # * save original path
-set -e
-set -u
-
 owd=$(pwd)
 
-# * arguments (path)
-if [ -z ${1+x} ] # secure way to check if $1 is set ( if [ ! -z "1$" ] -> produces error: "bash: error 'parameter not set"
+
+# * arguments (message)
+if [ -z ${2+x} ] # secure way to check if $1 is set ( if [ ! -z "1$" ] -> produces error: "bash: error 'parameter not set"
 then
-    # echo "arg 1 is unset"
-    path=""
+    # echo "arg 2 is unset"
+    message="."
 else
-    # echo "arg 1 is set to $1"
-    path=$1
+    # echo "arg 2 is set to $1"
+    message=$2
 fi
+
+echo "message is: " $message
 
 if [ ! -z "$path" ] #not(!) empty(-z)
 then
@@ -39,6 +61,7 @@ else # do nothing, suppose we are in the right
     echo "no path specified. execute gsyn in this directory: $(pwd)"
 fi
 
+
 # * sub-routines (functions)
 gsyn_addcommit() {
     owd=$(pwd)
@@ -46,8 +69,8 @@ gsyn_addcommit() {
     cd $path
     echo 'git add -A ...'
     git add -A || true
-    echo "git commit -m '.' ..."
-    git commit -m '.' || true
+    echo "git commit -m $message ..."
+    git commit -m $message || true
     cd $owd
 }
 
