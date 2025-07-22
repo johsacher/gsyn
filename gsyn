@@ -69,8 +69,8 @@ gsyn_addcommit() {
     cd $path
     echo 'git add -A ...'
     git add -A || true
-    echo "git commit -m $message ..."
-    git commit -m $message || true
+    echo "git commit -m '$message' ..."
+    git commit -m "$message" || true
     cd $owd
 }
 
