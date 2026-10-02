@@ -52,14 +52,9 @@ fi
 
 echo "message is: " $message
 
-if [ ! -z "$path" ] #not(!) empty(-z)
-then
-    path=$1
-    echo "path specified. execute gsyn in this directory: $path"
-    cd $path
-else # do nothing, suppose we are in the right
-    echo "no path specified. execute gsyn in this directory: $(pwd)"
-fi
+# $path is "." (default) or argument $1, see above
+echo "execute gsyn in this directory: $path"
+cd "$path"
 
 
 # * sub-routines (functions)
