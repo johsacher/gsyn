@@ -1,9 +1,13 @@
 #!/bin/sh
 
-cd ${0%/*} || exit 1    # Run from this directory
+cd "$(dirname "$0")" || exit 1    # Run from this directory
 
-cp gsyn $HOME/bin
-echo "gsyn installed for current user. i.e. gsyn-executable copied to $HOME/bin"
+# symlink (not copy) into ~/bin: repo updates take effect without re-installing,
+# and the scripts can find this repo via their real path (readlink -f)
+mkdir -p "$HOME/bin"
 
-cp gsyn_all $HOME/bin
-echo "gsyn installed for current user. i.e. gsyn-executable copied to $HOME/bin"
+ln -sf "$PWD/gsyn" "$HOME/bin/gsyn"
+echo "gsyn installed for current user. i.e. symlink $HOME/bin/gsyn -> $PWD/gsyn"
+
+ln -sf "$PWD/gsyn_all" "$HOME/bin/gsyn_all"
+echo "gsyn_all installed for current user. i.e. symlink $HOME/bin/gsyn_all -> $PWD/gsyn_all"

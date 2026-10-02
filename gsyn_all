@@ -1,10 +1,12 @@
 #!/bin/sh
 set -e
 set -u
-# get all projects from file gsyn_all_projects
-projects=$(cat "$HOME/gsyn/gsyn_all_projects")
+# get all projects from file gsyn_all_projects in this repo
+# (found via the real path of this script, so the repo can be cloned anywhere)
+repo=$(dirname "$(readlink -f "$0")")
+projects=$(cat "$repo/gsyn_all_projects")
 echo following projects will be gsyn\'ed
-echo '(change ~/gsyn/gsyn_all_projects, if you want different default ones)'
+echo "(change $repo/gsyn_all_projects, if you want different default ones)"
 echo $projects
 
 for proj in $projects; do
