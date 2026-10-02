@@ -64,8 +64,13 @@ gsyn_addcommit() {
     cd $path
     echo 'git add -A ...'
     git add -A || true
-    echo "git commit -m '$message' ..."
-    git commit -m "$message" || true
+    if git diff --cached --quiet ; then # nothing staged -> nothing to commit (normal case, go on)
+        echo "nothing to commit."
+    else
+        echo "git commit -m '$message' ..."
+        # changes staged, but commit failed (e.g. rejected by pre-commit hook) -> stop, no pull/push
+        git commit -m "$message" || { echo "gsyn: commit failed (hook? conflict?) - stopped, nothing pulled/pushed." ; exit 1 ; }
+    fi
     cd $owd
 }
 
